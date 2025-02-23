@@ -8,7 +8,7 @@ import fluid as VEF
 pygame.init()
 
 # Set up the display
-internal_width, internal_height = 16, 100
+internal_width, internal_height = 12, 60
 scale_factor = 5  # Scale factor to enlarge the window
 window_width, window_height = internal_width * \
     scale_factor, internal_height * scale_factor
@@ -22,7 +22,7 @@ font = pygame.font.SysFont(None, 24)
 
 viscosity = 0.1
 elasticity = 10
-particle_number = 200
+particle_number = 45
 fluid = VEF.VEFluid(particle_number, (internal_width - 1, internal_height - 1))
 white = (255, 255, 255)
 

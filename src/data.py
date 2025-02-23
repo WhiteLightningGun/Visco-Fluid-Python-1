@@ -5,38 +5,57 @@ import random
 
 class Vector2:
     def __init__(self, x=0.0, y=0.0):
-        self.x = x
-        self.y = y
+        self.vector = [x, y]
 
     def __add__(self, other):
-        return Vector2(self.x + other.x, self.y + other.y)
+        return Vector2(self.vector[0] + other.vector[0], self.vector[1] + other.vector[1])
 
     def __sub__(self, other):
-        return Vector2(self.x - other.x, self.y - other.y)
+        return Vector2(self.vector[0] - other.vector[0], self.vector[1] - other.vector[1])
 
     def __mul__(self, scalar):
-        return Vector2(self.x * scalar, self.y * scalar)
+        return Vector2(self.vector[0] * scalar, self.vector[1] * scalar)
 
     def __truediv__(self, scalar):
-        return Vector2(self.x / scalar, self.y / scalar)
+        return Vector2(self.vector[0] / scalar, self.vector[1] / scalar)
 
     def dot(self, other):
-        return self.x * other.x + self.y * other.y
+        return self.vector[0] * other.vector[0] + self.vector[1] * other.vector[1]
 
     def magnitude(self) -> float:
-        return math.sqrt((self.x**2 + self.y**2))
+        return math.sqrt(self.vector[0] ** 2 + self.vector[1] ** 2)
 
     def magnitudeSquared(self) -> float:
-        return (self.x**2 + self.y**2)
+        return self.vector[0] ** 2 + self.vector[1] ** 2
 
     def normalize(self):
         mag = self.magnitude()
         if mag == 0:
             return Vector2()
-        return self / mag
+        inv_mag = 1.0 / mag
+        return self*inv_mag
 
     def __repr__(self):
-        return f"Vector2({self.x}, {self.y})"
+        return f"Vector2({self.vector[0]}, {self.vector[1]})"
+
+    def __getitem__(self, index):
+        return self.vector[index]
+
+    @property
+    def x(self):
+        return self.vector[0]
+
+    @x.setter
+    def x(self, value):
+        self.vector[0] = value
+
+    @property
+    def y(self):
+        return self.vector[1]
+
+    @y.setter
+    def y(self, value):
+        self.vector[1] = value
 
 
 def approx_sqrt(x: float) -> float:

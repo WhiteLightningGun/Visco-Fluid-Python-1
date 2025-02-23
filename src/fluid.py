@@ -9,6 +9,9 @@ import math
 # strange water: REST_DENSITY = 8, K_NEAR = 2.5, K = 0.6
 # splashy water: REST_DENSITY = 4, K_NEAR = 2.0, K = 0.5
 # sploshy water: REST_DENSITY = 4, K_NEAR = 1.5, K = 0.5
+# fast slop: REST_DENSITY = 2, K_NEAR = 10, K = 0.4
+# faster slop: REST_DENSITY = 1, K_NEAR = 10, K = 0.4
+# different slop: REST_DENSITY = 1, K_NEAR = 10, K = 1
 
 
 class VEFluid:
@@ -16,15 +19,15 @@ class VEFluid:
         self.particle_count = particle_count
         self.boundary_box = boundary_box
         self.velocity_damping = 1
-        self.REST_DENSITY = 2
-        self.K_NEAR = 1.5
-        self.K = 0.5
+        self.REST_DENSITY = 1
+        self.K_NEAR = 8
+        self.K = 2
         self.INTERACTION_RADIUS = 2  # can be a float
         self.INTERACTION_RADIUS_2 = self.INTERACTION_RADIUS**2
-        self.GRAVITY: Data.Vector2 = Data.Vector2(0, 0.2)
+        self.GRAVITY: Data.Vector2 = Data.Vector2(0.0, 0.1)
         self.particles: List[Data.Particle] = self.initialize_particlesB()
         self.fluidHashGrid = HashGrid.FluidHashGrid(
-            self.INTERACTION_RADIUS, self.particles)
+            1, self.particles)
 
     def neighbourSearch(self, mousePos):
         self.fluidHashGrid.clearGrid()
@@ -145,6 +148,7 @@ class VEFluid:
 
     def doubleDensityRelaxationB(self, dt):
         interaction_radius = self.INTERACTION_RADIUS
+        interaction_radius_inv = 1.0/interaction_radius
         k = self.K
         k_near = self.K_NEAR
         rest_density = self.REST_DENSITY
@@ -156,14 +160,16 @@ class VEFluid:
             densityNear = 0
             neighbours: List[Data.Particle] = self.fluidHashGrid.getNeighboursOfParticleIdx(
                 i)
+
+            # print(len(neighbours))
             particle_A = self.particles[i]
             pos_A = particle_A.position
-
+            # slow part starts here
             for particle_B in neighbours:
                 if particle_A == particle_B:
                     continue
                 r_ij = particle_B.position - pos_A
-                q = r_ij.magnitude() / interaction_radius
+                q = r_ij.magnitude() * interaction_radius_inv
                 if q < 1.0:
                     one_minus_q = 1 - q
                     density += one_minus_q ** 2
@@ -177,7 +183,7 @@ class VEFluid:
                 if particle_A == particle_B:
                     continue
                 r_ij = particle_B.position - pos_A
-                q = r_ij.magnitude() / interaction_radius
+                q = r_ij.magnitude() * interaction_radius_inv
 
                 if q < 1.0:
                     r_ij.normalize()
