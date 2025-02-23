@@ -1,24 +1,25 @@
 import data
 from typing import List, Tuple
+from collections import defaultdict
+
 
 class FluidHashGrid:
-    def __init__(self, cellSize : int, particles : List[data.Particle]):
+    def __init__(self, cellSize: int, particles: List[data.Particle]):
         self.cellSize = cellSize
-        self.hashMap = {}
+        self.hashMap = defaultdict(list)
         self.hashMapSize = 100000000
         self.prime1 = 10000000141
         self.prime2 = 10000000093
-        self.prime3 = 1000000021
         self.particles = particles
 
     def clearGrid(self):
         self.hashMap.clear()
-    
+
     def getGridIdFromPosition(self, position: data.Vector2):
         x = int(position.x / self.cellSize)
         y = int(position.y / self.cellSize)
         return data.Vector2(x, y)
-    
+
     def getGridHashFromPosition(self, position: data.Vector2):
         x = int(position.x / self.cellSize)
         y = int(position.y / self.cellSize)
@@ -31,17 +32,12 @@ class FluidHashGrid:
     def mapParticleToCell(self) -> None:
         for p in self.particles:
             hash = self.getGridHashFromPosition(p.position)
-            entries = self.hashMap.get(hash)
-            if entries == None:
-                newArray = [p]
-                self.hashMap[hash] = newArray
-            else:
-                self.hashMap.get(hash).append(p)    
+            self.hashMap[hash].append(p)
 
     def getContentOfCell(self, id):
         content = self.hashMap.get(id, None)
         return content
-    
+
     def getNeighboursOfParticleIdx(self, i):
         """
         Gets list of neighbours of particle from particles[i] via the hashGrid
@@ -61,10 +57,7 @@ class FluidHashGrid:
 
                 neighbours.append(cellContent)
 
-        #flatten list for east iteration later
-        neighbours = [particle for sublist in neighbours if sublist is not None for particle in sublist]
+        # flatten list for east iteration later
+        neighbours = [
+            particle for sublist in neighbours if sublist is not None for particle in sublist]
         return neighbours
-
-
-
-        

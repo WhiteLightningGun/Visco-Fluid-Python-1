@@ -8,7 +8,7 @@ import fluid as VEF
 pygame.init()
 
 # Set up the display
-internal_width, internal_height = 128, 32
+internal_width, internal_height = 16, 100
 scale_factor = 5  # Scale factor to enlarge the window
 window_width, window_height = internal_width * \
     scale_factor, internal_height * scale_factor
@@ -22,7 +22,7 @@ font = pygame.font.SysFont(None, 24)
 
 viscosity = 0.1
 elasticity = 10
-particle_number = 100
+particle_number = 200
 fluid = VEF.VEFluid(particle_number, (internal_width - 1, internal_height - 1))
 white = (255, 255, 255)
 
@@ -37,7 +37,7 @@ while running:
     surface.fill((5, 5, 5))
     # pm.draw_pixel(surface, 20, 20, (255,255,255))
     mousePos = pygame.mouse.get_pos()
-    fluid.simulate(1, 0.2, mousePos)
+    fluid.simulate(1, 0.3, mousePos)
 
     for particle in fluid.particles:
         x = int(particle.position.x)

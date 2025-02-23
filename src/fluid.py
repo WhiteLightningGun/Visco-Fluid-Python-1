@@ -4,6 +4,12 @@ import data as Data
 import HashGrid
 import math
 
+# gooey plastic: REST_DENSITY = 6, K_NEAR = 4, K = 0.5
+# plastic 2: REST_DENSITY = 5, K_NEAR = 6, K = 1
+# strange water: REST_DENSITY = 8, K_NEAR = 2.5, K = 0.6
+# splashy water: REST_DENSITY = 4, K_NEAR = 2.0, K = 0.5
+# sploshy water: REST_DENSITY = 4, K_NEAR = 1.5, K = 0.5
+
 
 class VEFluid:
     def __init__(self, particle_count: int, boundary_box: Tuple[float, float]):
@@ -11,9 +17,9 @@ class VEFluid:
         self.boundary_box = boundary_box
         self.velocity_damping = 1
         self.REST_DENSITY = 2
-        self.K_NEAR = 3
+        self.K_NEAR = 1.5
         self.K = 0.5
-        self.INTERACTION_RADIUS = 1.5  # can be a float
+        self.INTERACTION_RADIUS = 2  # can be a float
         self.INTERACTION_RADIUS_2 = self.INTERACTION_RADIUS**2
         self.GRAVITY: Data.Vector2 = Data.Vector2(0, 0.2)
         self.particles: List[Data.Particle] = self.initialize_particlesB()
@@ -142,8 +148,10 @@ class VEFluid:
         k = self.K
         k_near = self.K_NEAR
         rest_density = self.REST_DENSITY
+        particles_num = len(self.particles)
+        dt_sqr = dt ** 2
 
-        for i in range(len(self.particles)):
+        for i in range(particles_num):
             density = 0
             densityNear = 0
             neighbours: List[Data.Particle] = self.fluidHashGrid.getNeighboursOfParticleIdx(
@@ -175,7 +183,7 @@ class VEFluid:
                     r_ij.normalize()
                     one_minus_q = 1 - q
                     displacementTerm = (
-                        dt ** 2) * (pressure * one_minus_q + pressureNear * (one_minus_q ** 2))
+                        dt_sqr) * (pressure * one_minus_q + pressureNear * (one_minus_q ** 2))
                     displacementVector = r_ij * displacementTerm
                     particle_B.position += displacementVector * 0.5
                     particleADisplacement -= displacementVector * 0.5
