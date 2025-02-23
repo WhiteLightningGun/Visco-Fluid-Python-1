@@ -1,24 +1,29 @@
 import pygame
 import sys
 import pygame_methods as pm
-#import fluid as VEF
+# import fluid as VEF
 import fluid as VEF
 
 # Initialize Pygame
 pygame.init()
 
 # Set up the display
-internal_width, internal_height = 64, 32
+internal_width, internal_height = 128, 32
 scale_factor = 5  # Scale factor to enlarge the window
-window_width, window_height = internal_width * scale_factor, internal_height * scale_factor
+window_width, window_height = internal_width * \
+    scale_factor, internal_height * scale_factor
 surface = pygame.Surface((internal_width, internal_height))
 window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption('Pygame Window')
 
+# Set up the clock for FPS
+clock = pygame.time.Clock()
+font = pygame.font.SysFont(None, 24)
+
 viscosity = 0.1
 elasticity = 10
 particle_number = 100
-fluid = VEF.VEFluid(particle_number, (internal_width -1, internal_height - 1))
+fluid = VEF.VEFluid(particle_number, (internal_width - 1, internal_height - 1))
 white = (255, 255, 255)
 
 # Main loop
@@ -30,9 +35,9 @@ while running:
 
     # Fill the screen with black
     surface.fill((5, 5, 5))
-    #pm.draw_pixel(surface, 20, 20, (255,255,255))
+    # pm.draw_pixel(surface, 20, 20, (255,255,255))
     mousePos = pygame.mouse.get_pos()
-    fluid.simulate(1, 0.1, mousePos)
+    fluid.simulate(1, 0.2, mousePos)
 
     for particle in fluid.particles:
         x = int(particle.position.x)
@@ -40,11 +45,20 @@ while running:
         pm.draw_pixel(surface, x, y, particle.colour)
 
     # Scale the internal surface to the window size
-    scaled_surface = pygame.transform.scale(surface, (window_width, window_height))
+    scaled_surface = pygame.transform.scale(
+        surface, (window_width, window_height))
     window.blit(scaled_surface, (0, 0))
+
+    # Display FPS
+    fps = clock.get_fps()
+    fps_text = font.render(f'FPS: {int(fps)}', True, white)
+    window.blit(fps_text, (10, 10))
 
     # Update the display
     pygame.display.flip()
+
+    # Cap the frame rate
+    clock.tick(60)
 
 # Quit Pygame
 pygame.quit()
